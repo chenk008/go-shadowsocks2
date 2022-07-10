@@ -34,6 +34,7 @@ func main() {
 		Password   string
 		Keygen     int
 		Socks      string
+		Http       string
 		RedirTCP   string
 		RedirTCP6  string
 		TCPTun     string
@@ -53,6 +54,7 @@ func main() {
 	flag.StringVar(&flags.Server, "s", "", "server listen address or url")
 	flag.StringVar(&flags.Client, "c", "", "client connect address or url")
 	flag.StringVar(&flags.Socks, "socks", "", "(client-only) SOCKS listen address")
+	flag.StringVar(&flags.Http, "http", "", "(client-only) HTTP listen address")
 	flag.BoolVar(&flags.UDPSocks, "u", false, "(client-only) Enable UDP support for SOCKS")
 	flag.StringVar(&flags.RedirTCP, "redir", "", "(client-only) redirect TCP from this address")
 	flag.StringVar(&flags.RedirTCP6, "redir6", "", "(client-only) redirect TCP IPv6 from this address")
@@ -134,6 +136,10 @@ func main() {
 			if flags.UDPSocks {
 				go udpSocksLocal(flags.Socks, udpAddr, ciph.PacketConn)
 			}
+		}
+
+		if flags.Http != "" {
+			go localHTTP(flags.Http, addr, ciph.StreamConn)
 		}
 
 		if flags.RedirTCP != "" {
